@@ -1,7 +1,8 @@
-import tty from 'tty';
-import fs from 'fs';
 import { KeyObject } from 'crypto';
+import fs from 'fs';
 import path from 'path';
+import tty from 'tty';
+
 import { parsePemKey, readPassphrase } from '../wbn-sign.js';
 
 // Parses either an unencrypted or encrypted private key. For encrypted keys, it
@@ -25,7 +26,7 @@ export async function parseMaybeEncryptedKey(
   // Read unencrypted private key.
   try {
     return parsePemKey(data);
-  } catch (e) {
+  } catch {
     console.warn('This key is probably an encrypted private key.');
   }
 
@@ -41,13 +42,14 @@ export async function parseMaybeEncryptedKey(
         ? process.env.WEB_BUNDLE_SIGNING_PASSPHRASE
         : await readPassphrase(description)
     );
-  } catch (e) {
+  } catch (err) {
     throw Error(
       `Failed decrypting encrypted private key with passphrase read from ${
         hasEnvVarSet
           ? '`WEB_BUNDLE_SIGNING_PASSPHRASE` environment variable'
           : 'prompt'
-      }`
+      }`,
+      { cause: err }
     );
   }
 }

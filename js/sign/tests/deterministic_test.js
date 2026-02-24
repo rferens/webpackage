@@ -1,8 +1,10 @@
-import * as det from '../lib/cbor/deterministic.js';
-import * as ainfo from '../lib/cbor/additionalinfo.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import url from 'url';
+
+import * as ainfo from '../lib/cbor/additionalinfo.js';
+import * as det from '../lib/cbor/deterministic.js';
+
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const uInts = {

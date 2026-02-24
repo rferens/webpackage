@@ -1,8 +1,9 @@
+import * as crypto from 'crypto';
+import * as fs from 'node:fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import * as fs from 'node:fs/promises';
+
 import * as wbnSign from '../lib/wbn-sign.js';
-import * as crypto from 'crypto';
 import { getBundleId } from '../lib/web-bundle-id.js';
 
 const TEST_ED25519_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----

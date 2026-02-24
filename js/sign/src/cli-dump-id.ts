@@ -1,11 +1,13 @@
-import { Command } from 'commander';
-import { WebBundleId } from './wbn-sign.js';
+import { createPublicKey, KeyObject } from 'crypto';
 import * as fs from 'fs';
+
+import { Command } from 'commander';
+
 import {
   greenConsoleLog,
   parseMaybeEncryptedKeyFromFile,
 } from './utils/cli-utils.js';
-import { KeyObject, createPublicKey } from 'crypto';
+import { WebBundleId } from './wbn-sign.js';
 
 const program = new Command()
   .name('wbn-dump-id')
@@ -20,7 +22,7 @@ function parsePublicKey(filePath: string): KeyObject {
 async function parseKey(filePath: string): Promise<KeyObject> {
   try {
     return parsePublicKey(filePath);
-  } catch (err) {
+  } catch {
     // Suppress this error.
   }
 

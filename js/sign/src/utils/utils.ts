@@ -1,6 +1,8 @@
-import crypto, { KeyObject } from 'crypto';
-import read from 'read';
 import assert from 'assert';
+import crypto, { KeyObject } from 'crypto';
+
+import read from 'read';
+
 import {
   PUBLIC_KEY_ATTRIBUTE_NAME_MAPPING,
   SignatureType,
@@ -19,8 +21,8 @@ export async function readPassphrase(description: string): Promise<string> {
       output: process.stderr,
     });
     return passphrase;
-  } catch (er) {
-    throw new Error('Reading passphrase failed.');
+  } catch (err) {
+    throw new Error('Reading passphrase failed.', { cause: err });
   }
 }
 

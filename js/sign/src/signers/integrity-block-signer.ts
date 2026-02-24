@@ -1,15 +1,16 @@
 import crypto, { KeyObject } from 'crypto';
+
 import { encode } from 'cborg';
-import { INTEGRITY_BLOCK_MAGIC, VERSION_B2 } from '../utils/constants.js';
+
 import { checkDeterministic } from '../cbor/deterministic.js';
+import { INTEGRITY_BLOCK_MAGIC, VERSION_B2 } from '../utils/constants.js';
 import {
-  getRawPublicKey,
   checkIsValidKey,
   getPublicKeyAttributeName,
+  getRawPublicKey,
 } from '../utils/utils.js';
 import { ISigningStrategy } from './signing-strategy-interface.js';
 
-type SignatureAttributeKey = string;
 type SignatureAttributes = { [SignatureAttributeKey: string]: Uint8Array };
 
 type IntegritySignature = {
@@ -79,7 +80,7 @@ export class IntegrityBlockSigner {
   readWebBundleLength(): number {
     // The length of the web bundle is contained in the last 8 bytes of the web
     // bundle, represented as BigEndian.
-    let buffer = Buffer.from(this.webBundle.slice(-8));
+    const buffer = Buffer.from(this.webBundle.slice(-8));
     // Number is big enough to represent 4GB which is the limit for the web
     // bundle size which can be contained in a Buffer, which is the format
     // in which it's passed back to e.g. Webpack.
@@ -100,8 +101,8 @@ export class IntegrityBlockSigner {
   }
 
   calcWebBundleHash(): Uint8Array {
-    var hash = crypto.createHash('sha512');
-    var data = hash.update(this.webBundle);
+    const hash = crypto.createHash('sha512');
+    const data = hash.update(this.webBundle);
     return new Uint8Array(data.digest());
   }
 
@@ -125,7 +126,7 @@ export class IntegrityBlockSigner {
     const totalLength = dataParts.reduce((previous, current) => {
       return previous + current.length;
     }, /*one big endian num per part*/ dataParts.length * bigEndianNumLength);
-    let buffer = Buffer.alloc(totalLength);
+    const buffer = Buffer.alloc(totalLength);
 
     let offset = 0;
     dataParts.forEach((d) => {
