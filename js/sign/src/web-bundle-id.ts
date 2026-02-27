@@ -1,12 +1,14 @@
 import crypto, { KeyObject } from 'crypto';
+
 import base32Encode from 'base32-encode';
+import { decodeFirst } from 'cborg';
+
+import { SignatureType } from './utils/constants.js';
 import {
   getRawPublicKey,
-  isAsymmetricKeyTypeSupported,
   getSignatureType,
+  isAsymmetricKeyTypeSupported,
 } from './utils/utils.js';
-import { SignatureType } from './utils/constants.js';
-import { decodeFirst } from 'cborg';
 
 // Web Bundle ID is a base32-encoded (without padding) ed25519 public key
 // transformed to lowercase. More information:
@@ -81,6 +83,6 @@ export function getBundleId(signedWebBundle: Uint8Array) {
 
     return attributes.webBundleId;
   } catch (e) {
-    throw Error(`Failed to obtain bundle ID, cause: ${e}`);
+    throw Error(`Failed to obtain bundle ID.`, { cause: e });
   }
 }

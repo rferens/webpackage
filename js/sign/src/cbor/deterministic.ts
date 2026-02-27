@@ -30,10 +30,10 @@ function deterministicRec(input: Uint8Array, index: number): number {
   const b = input[index];
 
   switch (getMajorType(b)) {
-    case MajorType.PosInt:
+    case MajorType.PosInt: {
       const { lengthInBytes } = unsignedIntegerDeterministic(input, index);
       return lengthInBytes + 1;
-
+    }
     case MajorType.ByteString:
     case MajorType.Text:
       return textOrByteStringDeterministic(input, index) + 1;
@@ -55,7 +55,7 @@ function deterministicRec(input: Uint8Array, index: number): number {
 function unsignedIntegerDeterministic(
   input: Uint8Array,
   index: number
-): { lengthInBytes: number; value: BigInt } {
+): { lengthInBytes: number; value: bigint } {
   const info = convertToAdditionalInfo(input[index]);
   const lengthInBytes = getAdditionalInfoLength(info);
   const value = getUnsignedIntegerValue(
@@ -130,7 +130,7 @@ function arrayDeterministic(input: Uint8Array, index: number): number {
   // Skip the starter byte and the bytes stating the number of elements the array has.
   let startIndexOfNextElement = index + 1 + lengthInBytes;
 
-  for (var /*element on the array*/ i = 0; i < Number(value); i++) {
+  for (let /*element on the array*/ i = 0; i < Number(value); i++) {
     if (startIndexOfNextElement >= input.length) {
       throw new Error(
         'Number of items on CBOR array is less than the number of items it claims.'
@@ -159,7 +159,7 @@ function mapDeterministic(input: Uint8Array, index: number): number {
   let startIndexOfNextElement = index + 1 + lengthInBytes;
   let lastSeenKey = new Uint8Array();
 
-  for (var mapItemIndex = 0; mapItemIndex < Number(value) * 2; mapItemIndex++) {
+  for (let mapItemIndex = 0; mapItemIndex < Number(value) * 2; mapItemIndex++) {
     if (startIndexOfNextElement >= input.length) {
       throw new Error(
         'Number of items on CBOR map is less than the number of items it claims.'

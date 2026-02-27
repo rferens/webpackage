@@ -1,11 +1,13 @@
-import * as wbnSign from '../lib/wbn-sign.js';
-import * as constants from '../lib/utils/constants.js';
-import * as utils from '../lib/utils/utils.js';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto';
-import * as cborg from 'cborg';
 import url from 'url';
+
+import * as cborg from 'cborg';
+
+import * as constants from '../lib/utils/constants.js';
+import * as utils from '../lib/utils/utils.js';
+import * as wbnSign from '../lib/wbn-sign.js';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const TEST_WEB_BUNDLE_HASH =

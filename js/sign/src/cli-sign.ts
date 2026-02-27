@@ -1,15 +1,17 @@
-import { Command, Option } from 'commander';
-import {
-  NodeCryptoSigningStrategy,
-  IntegrityBlockSigner,
-  WebBundleId,
-} from './wbn-sign.js';
+import { KeyObject } from 'crypto';
 import * as fs from 'fs';
+
+import { Command } from 'commander';
+
 import {
   greenConsoleLog,
   parseMaybeEncryptedKeyFromFile,
 } from './utils/cli-utils.js';
-import { KeyObject } from 'crypto';
+import {
+  IntegrityBlockSigner,
+  NodeCryptoSigningStrategy,
+  WebBundleId,
+} from './wbn-sign.js';
 
 const program = new Command()
   .name('wbn-sign')

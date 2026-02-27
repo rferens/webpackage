@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [20, 22, 24]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
@@ -38,13 +38,38 @@ jobs:
       - run: npm --prefix ./js/sign run build
       - run: npm --prefix ./js/sign test
 
-  prettier:
+  prettier-wbn:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js/bundle
     steps:
-      - uses: actions/checkout@v2
-      - uses: creyD/prettier_action@v4.3
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          prettier_options: --write **/*.{js,ts}
-          only_changed: True
-          dry: True
-          prettier_version: 2.7.1
+          node-version: 22
+      - name: Install Prettier
+        run: |
+          npm install prettier@3.5 --no-save
+      - name: Run Prettier Check
+        run: |
+            npx prettier --check . --ignore-unknown
+
+  prettier-wbn-sign:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js/sign
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Prettier and Plugins
+        run: |
+          npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
+      - name: Run Prettier Check
+        run: |
+            npx prettier --check . --ignore-unknown --plugin=@ianvs/prettier-plugin-sort-imports

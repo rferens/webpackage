@@ -46,17 +46,18 @@
     "@types/node": "^12.7.11",
     "esbuild": "^0.25.0",
     "jasmine": "^4.2.1",
-    "prettier": "2.8.0",
+    "prettier": "3.5.3",
     "typescript": "^4.7.3"
   },
   "engines": {
-    "node": ">= 12.0.0"
+    "node": ">= 20.0.0"
   },
   "prettier": {
     "tabWidth": 2,
     "semi": true,
     "singleQuote": true,
     "printWidth": 80,
-    "proseWrap": "always"
+    "proseWrap": "always",
+    "trailingComma": "es5"
   }
 }

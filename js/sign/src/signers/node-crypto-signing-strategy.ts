@@ -1,4 +1,5 @@
 import crypto, { KeyObject } from 'crypto';
+
 import { checkIsValidKey } from '../utils/utils.js';
 import { ISigningStrategy } from './signing-strategy-interface.js';
 

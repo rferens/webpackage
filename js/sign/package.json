@@ -1,6 +1,6 @@
 {
   "name": "wbn-sign",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Signing tool to sign a web bundle with integrity block",
   "homepage": "https://github.com/WICG/webpackage/tree/main/js/sign",
   "main": "./lib/wbn-sign.cjs",
@@ -35,7 +35,8 @@
   "contributors": [
     "Christian Flach <cmfcmf@google.com> (https://github.com/cmfcmf)",
     "Andrew Rayskiy <greengrape@google.com> (https://github.com/GrapeGreen)",
-    "Luke (Zgroza) Klimek <zgroza@google.com> (https://github.com/zgroza)"
+    "Zgroza (Luke) Klimek <zgroza@google.com> (https://github.com/zgroza)",
+    "Robert Ferens <rferens@google.com> (https://github.com/rferens)"
   ],
   "license": "W3C-20150513",
   "dependencies": {
@@ -45,22 +46,40 @@
     "read": "^2.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@types/node": "^16.0.0",
     "esbuild": "^0.25.0",
-    "jasmine": "^4.2.1",
+    "eslint": "^10.0.2",
+    "globals": "^17.3.0",
+    "jasmine": "^6.1.0",
     "mock-stdin": "^1.0.0",
-    "prettier": "2.8.0",
-    "typescript": "^5.9.2"
+    "prettier": "3.5.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.5.0"
   },
   "engines": {
-    "node": ">= 16.0.0",
-    "npm": ">= 8.0.0"
+    "node": ">= 22.13.0",
+    "npm": ">= 10.0.0"
   },
   "prettier": {
     "tabWidth": 2,
     "semi": true,
     "singleQuote": true,
     "printWidth": 80,
-    "proseWrap": "always"
+    "proseWrap": "always",
+    "trailingComma": "es5",
+    "plugins": [
+      "@ianvs/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+      "<BUILTIN_MODULES>",
+      "",
+      "<THIRD_PARTY_MODULES>",
+      "",
+      "^[.]"
+    ],
+    "importOrderTypeScriptVersion": "5.9.3",
+    "importOrderCaseSensitive": false
   }
 }
