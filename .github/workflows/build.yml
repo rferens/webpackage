@@ -42,12 +42,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: creyD/prettier_action@v4.5
+      - name: Setup Node.js
+      - uses: actions/setup-node@v4
         with:
-          prettier_options: --check **/*.{js,ts} --plugin=@ianvs/prettier-plugin-sort-imports
-          only_changed: True
-          dry: True
-          prettier_version: 3.5.3
-          allow_other_plugins: true
-          prettier_plugins: "@ianvs/prettier-plugin-sort-imports"
+          node-version: 20
+          cache: 'npm'
+      - name: Install Prettier and Plugins
+      - run: |
+          npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
+      - name: Run Prettier Check
+      - run: |
+          npx prettier --check js/sign/ --ignore-unknown --ignore-path js/sign/.prettierignore
+          npx prettier --check js/bundle/ --ignore-unknown --ignore-path js/bundle/.prettierignore
 
