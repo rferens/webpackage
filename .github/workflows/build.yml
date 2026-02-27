@@ -40,25 +40,37 @@ jobs:
 
   prettier-wbn:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: js/bundle
     steps:
       - uses: actions/checkout@v4
-      - uses: creyD/prettier_action@v4.5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          prettier_options: --write js/bundle/**/*.{js,ts}
-          only_changed: True
-          dry: True
-          prettier_version: 3.5
+          node-version: 22
+          cache: 'npm'
+      - name: Install Prettier
+        run: |
+          npm install prettier@3.5 --no-save
+      - name: Run Prettier Check
+        run: |
+            npx prettier --check . --ignore-unknown
 
   prettier-wbn-sign:
     runs-on: ubuntu-latest
+    run:
+      working-directory: js/sign
     steps:
       - uses: actions/checkout@v4
-      - uses: creyD/prettier_action@v4.5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          prettier_options: --write **/*.{js,ts} --plugin=@ianvs/prettier-plugin-sort-imports
-          working_directory: js/sign
-          only_changed: True
-          dry: True
-          prettier_version: 3.5
-          allow_other_plugins: true
-          prettier_plugins: "@ianvs/prettier-plugin-sort-imports"
+          node-version: 22
+          cache: 'npm'
+      - name: Install Prettier and Plugins
+        run: |
+          npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
+      - name: Run Prettier Check
+        run: |
+            npx prettier --check . --ignore-unknown --plugin=@ianvs/prettier-plugin-sort-imports
