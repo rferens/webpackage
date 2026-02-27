@@ -47,9 +47,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: |
-            src/bundle/package-lock.json
-            src/sign/package-lock.json
+          cache-dependency-path: "**/package-lock.json"
       - name: Install Prettier and Plugins
         run: |
           npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
