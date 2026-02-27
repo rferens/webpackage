@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: creyD/prettier_action@v4.6
+      - uses: creyD/prettier_action@v4.5
         with:
           prettier_options: --check **/*.{js,ts}
           only_changed: True
