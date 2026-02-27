@@ -53,5 +53,5 @@ jobs:
           npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
       - name: Run Prettier Check
         run: |
-            ./node_modules/.bin/prettier --check src/bundle/. --ignore-unknown --ignore-path=src/bundle/.prettierignore
-            ./node_modules/.bin/prettier --check src/sign/. --ignore-unknown --ignore-path=src/sign/.prettierignore --plugin=@ianvs/prettier-plugin-sort-imports
+            ./node_modules/.bin/prettier --check src/bundle/ --ignore-unknown --ignore-path=src/bundle/.prettierignore
+            ./node_modules/.bin/prettier --check src/sign/ --ignore-unknown --ignore-path=src/sign/.prettierignore --plugin=@ianvs/prettier-plugin-sort-imports
