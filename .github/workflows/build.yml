@@ -52,6 +52,20 @@ jobs:
           npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
       - name: Run Prettier Check
         run: |
-          npx prettier --check js/sign/ --ignore-unknown --ignore-path js/sign/.prettierignore
-          npx prettier --check js/bundle/ --ignore-unknown --ignore-path js/bundle/.prettierignore
+          FOLDERS=("src/bundle" "src/sign")
+          for dir in "${FOLDERS[@]}"; do
+            echo "--- Processing $dir ---"
+            # 1. Move into the directory
+            cd $GITHUB_WORKSPACE/$dir
+            
+            # 2. Install Prettier + Plugin locally in this subfolder
+            # --no-save ensures we don't accidentally modify your package.json
+            npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
+            
+            # 3. Run the check
+            # We use ./node_modules/.bin/prettier to ensure we use the local version
+            ./node_modules/.bin/prettier --check . --ignore-unknown --ignore-path=.prettignore --plugin=@ianvs/prettier-plugin-sort-imports
+            
+            echo "--- Finished $dir ---"
+          done
 
