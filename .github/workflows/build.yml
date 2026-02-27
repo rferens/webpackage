@@ -38,20 +38,26 @@ jobs:
       - run: npm --prefix ./js/sign run build
       - run: npm --prefix ./js/sign test
 
-  prettier:
+  prettier-wbn:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: creyD/prettier_action@v4.5
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: "**/package-lock.json"
-      - name: Install Prettier and Plugins
-        run: |
-          npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
-      - name: Run Prettier Check
-        run: |
-            npx prettier --check "src/bundle/**/*.{js,ts,json,md}" --ignore-unknown --ignore-path=src/bundle/.prettierignore
-            npx prettier --check "src/sign/**/*.{js,ts,json,md}" --ignore-unknown --ignore-path=src/sign/.prettierignore --plugin=@ianvs/prettier-plugin-sort-imports
+          prettier_options: --check **/*.{js,ts}
+          only_changed: True
+          dry: True
+          prettier_version: 3.5
+
+  prettier-wbn-sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: creyD/prettier_action@v4.5
+        with:
+          prettier_options: --check **/*.{js,ts} --plugin=@ianvs/prettier-plugin-sort-imports
+          only_changed: True
+          dry: True
+          prettier_version: 3.5
+          allow_other_plugins: true
+          prettier_plugins: "@ianvs/prettier-plugin-sort-imports"
