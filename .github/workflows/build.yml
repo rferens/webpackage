@@ -43,15 +43,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
-      - uses: actions/setup-node@v4
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
       - name: Install Prettier and Plugins
-      - run: |
+        run: |
           npm install prettier@3.5 @ianvs/prettier-plugin-sort-imports --no-save
       - name: Run Prettier Check
-      - run: |
+        run: |
           npx prettier --check js/sign/ --ignore-unknown --ignore-path js/sign/.prettierignore
           npx prettier --check js/bundle/ --ignore-unknown --ignore-path js/bundle/.prettierignore
 
