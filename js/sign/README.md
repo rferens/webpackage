@@ -17,7 +17,7 @@ npm install wbn-sign
 
 ## Requirements
 
-This plugin requires Node v16.0.0+.
+This plugin requires Node v22.13.0+.
 
 ## Usage
 
@@ -99,13 +99,48 @@ This package also includes 2 CLI tools
 - `wbn-dump-id` which can be used to calculate the Web Bundle ID corresponding
   to your signing key.
 
-### Running wbn-sign
+### Running wbn-sign 
+#### New usage form (>= 0.2.7)
 
-There are the following command-line flags available:
+The base usage from is: `wbn-sign [command] [options] <arguments...>`
 
+Currenly supported commands are:
+```
+Usage: wbn-sign sign [options] <web_bundle> <private_keys...>
+
+Signs the given web bundle with private key(s). Produces signed web bundle output file.
+
+Arguments:
+  web_bundle                       a web bundle (file `*.wbn`) to sign
+  private_keys                     private keys (files `*.pem`) with which the web bundle will be signed. EcdsaP256 and ed25519 keys (encrypted and not encrypted) are supported.
+
+Options:
+  -o, --output <file>              signed web bundle output file (default: "signed.swbn")
+  --web-bundle-id <web-bundle-id>  web bundle ID. Derived from the first key if not specified.
+  -h, --help                       display help for command
+```
+
+For more details check `wbn-sign help [command]`.
+
+Example commands:
+
+```bash
+wbn-sign sign ~/path/to/webbundle.wbn ~/path/to/ed25519key.pem -o ~/path/to/signed-webbundle.swbn
+```
+
+```bash
+wbn-sign sign ~/path/to/webbundle.wbn ~/path/to/ed25519key.pem ~/path/to/ecdsa_p256key.pem \
+  --web-bundle-id amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqvfmsk5ss6maacai \
+  -o ~/path/to/signed-webbundle.swbn
+```
+
+
+#### Legacy usage (<0.2.6)
+Previously the CLI tool used only options (no command). This usage form will be deprecated, but in the actual version is still supported.
+
+In `wbn-sign [options]` form followling options are available:
 - (required) `--private-key <filePath>` (`-k <filePath>`)  
-  which takes the path to ed25519 private key. If chosen format is `v2`, this
-  can be specified multiple times.
+  which takes the path to ed25519/ecdsaP256 private key. Can be specified multiple times.
 - (required) `--input <filePath>` (`-i <filePath>`)  
   which takes the path to the web bundle to be signed.
 - (optional) `--output <filePath>` (`-o <filePath>`)  
@@ -114,25 +149,6 @@ There are the following command-line flags available:
 - (required if more than one key is provided)
   `--web-bundle-id <web-bundle-id>`  
   which takes the `web-bundle-id` to be associated with the web bundle.
-
-Example commands:
-
-```bash
-wbn-sign \
--i ~/path/to/webbundle.wbn \
--o ~/path/to/signed-webbundle.swbn \
--k ~/path/to/ed25519key.pem
-```
-
-```bash
-wbn-sign \
--i ~/path/to/webbundle.wbn \
--o ~/path/to/signed-webbundle.swbn \
--k ~/path/to/ed25519key.pem \
--k ~/path/to/ecdsa_p256key.pem
---web-bundle-id \
-  amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqvfmsk5ss6maacai
-```
 
 ### Running wbn-dump-id
 
@@ -194,6 +210,16 @@ then you can bypass the passphrase prompt by storing the passphrase in an
 environment variable named `WEB_BUNDLE_SIGNING_PASSPHRASE`.
 
 ## Release Notes
+
+### v0.2.7
+  - The new command line interface that supports commands introduced for wbn-sign tool
+
+### v0.2.6
+Mostly developer changes, not affecting usage:
+
+ - Adds eslint to control style consistency and prevent errors with `npx eslint .`
+ - Adds prettifier module to keep imports always sorted
+ - Updates some devDependecy packages version
 
 ### v0.2.5
 

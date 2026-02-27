@@ -1,7 +1,7 @@
 {
   "name": "wbn-sign",
-  "version": "0.2.6",
-  "description": "Signing tool to sign a web bundle with integrity block",
+  "version": "0.2.7",
+  "description": "Tool to sign web bundles and manage signatures of signed web bundles.",
   "homepage": "https://github.com/WICG/webpackage/tree/main/js/sign",
   "main": "./lib/wbn-sign.cjs",
   "type": "module",
@@ -15,6 +15,8 @@
     "build:esm": "tsc",
     "build:cjs": "esbuild --bundle --format=cjs --outfile=lib/wbn-sign.cjs src/wbn-sign.ts --platform=node",
     "test": "jasmine tests/*.js tests/*.cjs",
+    "test:cli": "jasmine tests/cli_test.js",
+    "prepublishOnly": "npm test",
     "lint": "npx prettier --write . --ignore-unknown --config ./package.json"
   },
   "bin": {
@@ -42,7 +44,7 @@
   "dependencies": {
     "base32-encode": "^2.0.0",
     "cborg": "^4.2.14",
-    "commander": "^7.0.0",
+    "commander": "^14.0.0",
     "read": "^2.0.0"
   },
   "devDependencies": {
