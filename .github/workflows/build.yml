@@ -48,5 +48,6 @@ jobs:
           only_changed: True
           dry: True
           prettier_version: 3.5.3
-          allow_other_plugins: True
+          allow_other_plugins: true
+          prettier_plugins: "@ianvs/prettier-plugin-sort-imports"
 
