@@ -60,7 +60,8 @@ jobs:
   prettier-wbn-sign:
     runs-on: ubuntu-latest
     defaults:
-      working-directory: js/sign
+      run:
+        working-directory: js/sign
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
