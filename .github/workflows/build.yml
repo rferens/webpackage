@@ -59,7 +59,7 @@ jobs:
 
   prettier-wbn-sign:
     runs-on: ubuntu-latest
-    run:
+    defaults:
       working-directory: js/sign
     steps:
       - uses: actions/checkout@v4
