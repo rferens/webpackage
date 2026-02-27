@@ -1,38 +1,91 @@
+import assert from 'assert';
 import crypto, { KeyObject } from 'crypto';
 
 import { encode } from 'cborg';
 
 import { checkDeterministic } from '../cbor/deterministic.js';
-import { INTEGRITY_BLOCK_MAGIC, VERSION_B2 } from '../utils/constants.js';
+import {
+  IntegrityBlock,
+  type IntegritySignature,
+  type SignatureAttributes,
+} from '../core/integrity-block.js';
 import {
   checkIsValidKey,
   getPublicKeyAttributeName,
   getRawPublicKey,
+  isPureWebBundle,
+  verifySignature,
 } from '../utils/utils.js';
 import { ISigningStrategy } from './signing-strategy-interface.js';
 
-type SignatureAttributes = { [SignatureAttributeKey: string]: Uint8Array };
-
-type IntegritySignature = {
-  signatureAttributes: SignatureAttributes;
-  signature: Uint8Array;
-};
-
+// This class were previously exported, but now is going to be used only internally.
+// Therefore its methods are marked as deprecated to discourage using them while still keeping backward compatible.
+// Later @deprecated markers may change to @internal to make it fully internal.
 export class IntegrityBlockSigner {
-  constructor(
-    private readonly webBundle: Uint8Array,
-    private readonly webBundleId: string,
-    private readonly signingStrategies: Array<ISigningStrategy>
-  ) {}
+  private readonly integrityBlock: IntegrityBlock;
+  private readonly webBundle: Uint8Array;
+  private readonly signingStrategies: Array<ISigningStrategy>;
 
+  /**
+   * @internal This class is only internal, use SignedWebBundle.from* instead
+   * First argument can be only a pure web bundle (without integrity block)
+   */
+  constructor(
+    webBundle: Uint8Array,
+    integrityBlock: IntegrityBlock,
+    signingStrategies: Array<ISigningStrategy>
+  );
+  /**
+   * @deprecated This class is only internal, use SignedWebBundle.from* instead
+   * Marked as deprecated, not internal for backward compatibility
+   * First argument can be only a pure web bundle (without integrity block)
+   */
+  constructor(
+    webBundle: Uint8Array,
+    webBundleId: string,
+    signingStrategies: Array<ISigningStrategy>
+  );
+  constructor(
+    webBundle: Uint8Array,
+    arg2: string | IntegrityBlock,
+    signingStrategies: Array<ISigningStrategy>
+  ) {
+    this.webBundle = webBundle;
+    assert(isPureWebBundle(this.webBundle), 'Wrong argument');
+    // arg2: Web bundle id
+    if (typeof arg2 === 'string') {
+      this.integrityBlock = new IntegrityBlock() as IntegrityBlock;
+      this.integrityBlock.setWebBundleId(arg2);
+    }
+    // arg2: IntegrityBlock
+    else {
+      assert(arg2 instanceof IntegrityBlock, 'Wrong argument');
+      this.integrityBlock = arg2;
+    }
+    this.signingStrategies = signingStrategies;
+  }
+
+  /** @deprecated This class is only internal, use SignedWebBundle instead. Sign() is going to change interface in next releases. */
   async sign(): Promise<{
     integrityBlock: Uint8Array;
     signedWebBundle: Uint8Array;
   }> {
-    const integrityBlock = this.obtainIntegrityBlock().integrityBlock;
-    integrityBlock.setWebBundleId(this.webBundleId);
+    const newIntegrityBlock = await this.signAndGetIntegrityBlock();
+    const signedIbCbor = newIntegrityBlock.toCbor();
 
-    const signatures = new Array<IntegritySignature>();
+    const signedWebBundle = Buffer.concat([signedIbCbor, this.webBundle]);
+
+    return {
+      integrityBlock: signedIbCbor,
+      signedWebBundle,
+    };
+  }
+
+  // This method is expected to replace 'sign' which now keeps previous return type for backward compatibility
+  /** @internal */
+  async signAndGetIntegrityBlock(): Promise<IntegrityBlock> {
+    const newSignatures = new Array<IntegritySignature>();
+    // Append new signatures to the old stack
     for (const signingStrategy of this.signingStrategies) {
       const publicKey = await signingStrategy.getPublicKey();
       checkIsValidKey('public', publicKey);
@@ -40,7 +93,7 @@ export class IntegrityBlockSigner {
         [getPublicKeyAttributeName(publicKey)]: getRawPublicKey(publicKey),
       };
 
-      const ibCbor = integrityBlock.toCBOR();
+      const ibCbor = this.integrityBlock.toStrippedCbor();
       const attrCbor = encode(newAttributes);
       checkDeterministic(ibCbor);
       checkDeterministic(attrCbor);
@@ -56,27 +109,23 @@ export class IntegrityBlockSigner {
 
       // The signatures are calculated independently, and thus not appended to
       // the integrity block here to not affect subsequent calculations.
-      signatures.push({
+      newSignatures.push({
         signature,
         signatureAttributes: newAttributes,
       });
     }
 
-    for (const signature of signatures) {
-      integrityBlock.addIntegritySignature(signature);
+    for (const signature of newSignatures) {
+      this.integrityBlock.addIntegritySignature(signature);
     }
 
-    const signedIbCbor = integrityBlock.toCBOR();
+    const signedIbCbor = this.integrityBlock.toCbor();
     checkDeterministic(signedIbCbor);
 
-    return {
-      integrityBlock: signedIbCbor,
-      signedWebBundle: new Uint8Array(
-        Buffer.concat([signedIbCbor, this.webBundle])
-      ),
-    };
+    return this.integrityBlock;
   }
 
+  /** @deprecated This class is only internal, use SignedWebBundle instead*/
   readWebBundleLength(): number {
     // The length of the web bundle is contained in the last 8 bytes of the web
     // bundle, represented as BigEndian.
@@ -87,25 +136,15 @@ export class IntegrityBlockSigner {
     return Number(buffer.readBigUint64BE());
   }
 
-  obtainIntegrityBlock(): {
-    integrityBlock: IntegrityBlock;
-    offset: number;
-  } {
-    const webBundleLength = this.readWebBundleLength();
-    if (webBundleLength !== this.webBundle.length) {
-      throw new Error(
-        'IntegrityBlockSigner: Re-signing signed bundles is not supported yet.'
-      );
-    }
-    return { integrityBlock: new IntegrityBlock(), offset: 0 };
-  }
-
+  // TODO: Move this method to SignedWebBundle/WebBundle class, signer do not need this, especially externally
+  /** @deprecated This class is only internal, use SignedWebBundle instead*/
   calcWebBundleHash(): Uint8Array {
     const hash = crypto.createHash('sha512');
     const data = hash.update(this.webBundle);
     return new Uint8Array(data.digest());
   }
 
+  /** @internal */
   generateDataToBeSigned(
     webBundleHash: Uint8Array,
     integrityBlockCborBytes: Uint8Array,
@@ -140,51 +179,16 @@ export class IntegrityBlockSigner {
     return new Uint8Array(buffer);
   }
 
+  /** @deprecated  Moved to utils */
   verifySignature(
     data: Uint8Array,
     signature: Uint8Array,
     publicKey: KeyObject
   ): void {
-    // For ECDSA P-256 keys the algorithm is implicitly selected as SHA-256.
-    const isVerified = crypto.verify(
-      /*algorithm=*/ undefined,
-      data,
-      publicKey,
-      signature
-    );
-
-    if (!isVerified) {
+    if (!verifySignature(data, signature, publicKey)) {
       throw new Error(
         'IntegrityBlockSigner: Signature cannot be verified. Your keys might be corrupted or not corresponding each other.'
       );
     }
-  }
-}
-
-export class IntegrityBlock {
-  private attributes: Map<string, string> = new Map();
-  private signatureStack: IntegritySignature[] = [];
-
-  constructor() {}
-
-  setWebBundleId(webBundleId: string) {
-    this.attributes.set('webBundleId', webBundleId);
-  }
-
-  addIntegritySignature(is: IntegritySignature) {
-    this.signatureStack.push(is);
-  }
-
-  toCBOR(): Uint8Array {
-    return encode([
-      INTEGRITY_BLOCK_MAGIC,
-      VERSION_B2,
-      this.attributes,
-      this.signatureStack.map((integritySig) => {
-        // The CBOR must have an array of length 2 containing the following:
-        // (0) attributes and (1) signature. The order is important.
-        return [integritySig.signatureAttributes, integritySig.signature];
-      }),
-    ]);
   }
 }
