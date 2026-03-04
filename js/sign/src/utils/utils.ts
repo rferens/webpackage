@@ -1,30 +1,10 @@
 import assert from 'assert';
 import crypto, { KeyObject } from 'crypto';
 
-import read from 'read';
-
 import {
   PUBLIC_KEY_ATTRIBUTE_NAME_MAPPING,
   SignatureType,
 } from './constants.js';
-
-// A helper function that can be used to read the passphrase to decrypt a
-// password-decrypted private key.
-export async function readPassphrase(description: string): Promise<string> {
-  try {
-    const passphrase = await read({
-      prompt: `Passphrase for the key ${description}: `,
-      silent: true,
-      replace: '*',
-      // Output must be != `stdout`. Otherwise saving the `wbn-dump-id`
-      // result into a file or an environment variable also includes the prompt.
-      output: process.stderr,
-    });
-    return passphrase;
-  } catch (err) {
-    throw new Error('Reading passphrase failed.', { cause: err });
-  }
-}
 
 // A helper function which can be used to parse string formatted keys to
 // KeyObjects.
